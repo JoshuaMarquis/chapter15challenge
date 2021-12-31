@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import Form from './Form';
+import List from './List';
+import Table from './Table';
+
 
 function App() {
+  const [reqType, setReqType]= useState('users');
+  const [content, setContent] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
+  const API_URL = 'https://jsonplaceholder.typicode.com/'
+
+  useEffect(() => {
+    const fetchItems = async() =>{
+      try{
+        const response = await fetch(`${API_URL}${reqType}`);
+        if(!response.ok) throw Error('Error receiving from API');
+        const data = await response.json();
+        console.log(data);
+        setContent(data);
+      }catch(err){
+        setFetchError(err.message);
+      } finally{
+        //setisloading
+      }
+    
+    }
+    fetchItems();
+
+  }, [reqType]);
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Form reqType={reqType} setReqType={setReqType}> </Form>
+      {/* <List content={content}></List> */}
+      <Table content={content}></Table>
+
     </div>
   );
 }
